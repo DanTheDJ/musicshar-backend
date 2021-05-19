@@ -1,13 +1,15 @@
 // Require rootpath package so imports can reference from folder root.
 require('rootpath')();
 
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const  logger = require('morgan');
+
+const cors = require('cors');
 
 const errorHandler = require('src/_middleware/error-handler');
 
-var authRoutes = require('src/routes/auth');
+const authRoutes = require('src/routes/auth');
 
 var app = express();
 
@@ -15,6 +17,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// allow cors requests from any origin and with credentials
+app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 
 app.use('/auth', authRoutes);
 
