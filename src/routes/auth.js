@@ -9,15 +9,15 @@ function registerAccount(req, res, next) {
 
   var newAccountData = req.body;
 
-  authService.registerAccount(newAccountData).then(function(user) {
+  authService.registerAccount(newAccountData).then(function(data) {
 
-    res.status(201).send(user);
+    res.status(201).send(data.toJson());
 
   })
-  .catch(function(error) {
+  .catch(function(err) {
 
     res.status(400).json({
-      message: error
+      message: err
     });
 
   });
