@@ -71,6 +71,44 @@ async function registerAccount(newAccountData)
 
 };
 
+async function authenticateCredentials(loginData)
+{
+
+    return new Promise(function(resolve, reject) {
+
+        // Check there isn't an existing user with same email or username.
+        User.findAll({
+            where: {
+                email: loginData.email
+            }
+        }).then(function(res) {
+
+            if(res.length != 0)
+            {
+
+                const user = res[0];
+
+                if(!!user && bcrypt.compareSync(loginData.password, user.password))
+                {
+
+                    resolve(user);
+
+                }
+
+            }
+
+            reject('Invalid credentials');
+
+        })
+        .catch((err) => {
+            reject(err);
+        });
+
+    });
+
+}
+
 module.exports = {
-    registerAccount
+    registerAccount,
+    authenticateCredentials
 };
