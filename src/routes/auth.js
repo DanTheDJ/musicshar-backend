@@ -51,6 +51,20 @@ function login(req, res, next) {
   
 }
 
+function logout(req, res, next)
+{
+
+  if(!!req.session)
+  {
+
+    req.session.destroy();
+
+  }
+
+  res.sendStatus(204);
+
+}
+
 function getCurrentUserProfile(req, res, next) {
 
   getUserProfileFromSession(req).then(function(profile) {
@@ -75,6 +89,7 @@ function getCurrentUserProfile(req, res, next) {
 // Routes registration
 router.post('/register', authSchemas.registerAccountSchema, registerAccount);
 router.post('/authenticate', authSchemas.authenticateSchema, login);
+router.post('/logout', logout);
 
 router.get('/me', getCurrentUserProfile);
 
