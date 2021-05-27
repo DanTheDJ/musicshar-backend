@@ -1,0 +1,29 @@
+- users table
+
+
+id BIGINT PK AI
+username VARCHAR(255) NN
+name VARCHAR(255) NN
+email VARCHAR(255) NN
+password VARCHAR(255) - Bcrypt hash of password
+
+
+ - hosts
+
+id BIGINT PK AI
+
+name VARCHAR(255)
+description TEXT
+
+//TODO: Finish off columns for hosts
+
+
+- host_users
+
+host_id FK
+user_id FK
+type - Owner, Moderator
+
+
+
+All data is self contained in the database and/or configured object storage, and with the solution being open-source, the ability for DJ companies to download and host on their own web domain is also available.

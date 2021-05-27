@@ -3,7 +3,7 @@ const db = require('src/models/index');
 const User = db.User;
 const Op = db.Sequelize.Op;
 
-function getCurrentUserId(req)
+function getCurrentUserIdFromReq(req)
 {
 
     const session = req.session;
@@ -24,7 +24,7 @@ function getUserProfileFromSession(req)
 
     return new Promise(function(resolve, reject) {
 
-        const currentUserId = getCurrentUserId(req);
+        const currentUserId = getCurrentUserIdFromReq(req);
 
         if(!!currentUserId)
         {
@@ -55,6 +55,6 @@ function getUserProfileFromSession(req)
 }
 
 module.exports = {
-    getCurrentUserId,
+    getCurrentUserIdFromReq,
     getUserProfileFromSession    
 };
