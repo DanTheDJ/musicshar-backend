@@ -91,14 +91,25 @@ async function authenticateCredentials(loginData)
                 if(!!user && bcrypt.compareSync(loginData.password, user.password))
                 {
 
+                    console.log(user);
+
                     resolve(user);
+
+                }
+                else
+                {
+
+                    reject('Invalid credentials');
 
                 }
 
             }
+            else
+            {
 
-            reject('Invalid credentials');
+                reject('Invalid credentials');
 
+            }
         })
         .catch((err) => {
             reject(err);

@@ -32,11 +32,17 @@ function login(req, res, next) {
 
   const session = req.session;
 
+  console.log(loginData);
+
   authService.authenticateCredentials(loginData).then(function(user) {
 
     // Sucessfully logged in, send 204 to indicate success.
 
-    session.userId = user.id;
+    session.user = {
+      id: user.id
+    };
+
+    console.log(session);
 
     res.sendStatus(204);
 
@@ -65,9 +71,11 @@ function logout(req, res, next)
 
 }
 
-function getCurrentUserProfile(req, res, next) {
+function getCurrentUserProfile(req, res, next) {  
 
   getUserProfileFromSession(req).then(function(profile) {
+
+    console.log('me', req.session);
 
     if(!!profile)
     {

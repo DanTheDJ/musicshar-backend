@@ -8,10 +8,10 @@ function getCurrentUserIdFromReq(req)
 
     const session = req.session;
 
-    if(!!req.session && !!req.session.userId)
+    if(!!req.session && !!req.session.user && !!req.session.user.id)
     {
 
-        return req.session.userId;
+        return req.session.user.id;
 
     }
 

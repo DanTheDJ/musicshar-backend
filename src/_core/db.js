@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize');
 
-const config = require('src/config/db.config');
+const config = require('src/config/settings');
 
-const sequelize = new Sequelize(config.Database, config.Username, config.Password, {
-  host: config.Hostname,
-  dialect: config.Dialect,
+const sequelize = new Sequelize(config.databaseName, config.databaseUsername, config.databasePassword, {
+  host: config.databaseHostname,
+  dialect: config.databaseDialect,
 
 //   pool: {
 //     max: dbConfig.pool.max,

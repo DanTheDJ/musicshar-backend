@@ -1,12 +1,17 @@
 const redis = require('redis');
-const session = require('express-session');
-const connectRedis = require('connect-redis');
+const env = process.env.NODE_ENV || 'development';
+const config = require('src/config/settings');
 
-const RedisStore = connectRedis(session);
+const expressSession = require('express-session');
+
+const connectRedis = require('connect-redis');
+const sharedsession = require("express-socket.io-session");
+
+const RedisStore = connectRedis(expressSession);
 
 const redisClient = redis.createClient({
-    host: 'localhost',
-    port: 6379
+    host: config.redisHost,
+    port: config.redisPort
 });
 
 redisClient.on('error', function (err) {
@@ -17,8 +22,20 @@ redisClient.on('connect', function (err) {
     console.log('Connected to redis successfully');
 });
 
+const session = expressSession({
+    secret: config.sessionSecret,
+    name: 'MusicSharSession',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+    store: new RedisStore({ host: config.redisHost, port: config.redisPort, client: redisClient, ttl: 86400 }),
+});
+
+const sharedSession = sharedsession(session);
+
 module.exports = {
     session,
+    sharedSession,
     RedisStore,
     redisClient
 };
