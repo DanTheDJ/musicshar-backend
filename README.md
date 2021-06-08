@@ -1,7 +1,7 @@
 
-# musicshar-frontend
+# musicshar-backend
 
-Holds the frontend code for the MusicShar application. See https://github.com/DanTheDJ/musicshar-meta
+Holds the backend code for the MusicShar application. See https://github.com/DanTheDJ/musicshar-meta for more information about the project.
 
 ## Installation
 
