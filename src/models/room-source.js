@@ -6,7 +6,7 @@ const {
 const PROTECTED_ATTRIBUTES = [];
 
 module.exports = (sequelize, DataTypes) => {
-  class Room extends Model {
+  class RoomSource extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -29,30 +29,29 @@ module.exports = (sequelize, DataTypes) => {
     }
 
   };
-  Room.init({
+  RoomSource.init({
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: Sequelize.UUIDV4
     },
-    name: {
+    type: {
       type: DataTypes.STRING
     },
-    isPublic: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+    data: {
+      type: DataTypes.JSON
     }
   }, {
     sequelize,
-    modelName: 'Room',
+    modelName: 'RoomSource',
   });
 
-  Room.associate = function(models) {
+  RoomSource.associate = function(models) {
 
-    Room.belongsTo(models.User, {as: 'ownerUser'});
-    Room.belongsTo(models.RoomSource, {as: 'roomSource'});
+    // Room.belongsTo(models.User, {as: 'ownerUser'});
+    // Room.belongsTo(models.RoomSource, {as: 'roomSource'});
 
   };
 
-  return Room;
+  return RoomSource;
 };

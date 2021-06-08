@@ -4,36 +4,20 @@ const uuid = require('uuid'); // ES5
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Rooms', {
+    await queryInterface.createTable('RoomSources', {
       id: {
         primaryKey: true,
         allowNull: false,
         type: Sequelize.UUID,
         defaultValue: uuid.v4
       },
-      name: {
+      type: {
         type: Sequelize.STRING
       },
-      isPublic: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      ownerUserId: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Users',
-          key: 'id'
-        }
-      },
-      roomSourceId: {
+      data: {
+        type: Sequelize.JSON,
         allowNull: true,
-        type: Sequelize.UUID,
-        references: {
-          model: 'RoomSources',
-          key: 'id'
-        }
+        defaultValue: null
       },
       createdAt: {
         allowNull: false,
@@ -46,6 +30,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Rooms');
+    await queryInterface.dropTable('RoomSources');
   }
 };

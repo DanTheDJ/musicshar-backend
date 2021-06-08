@@ -6,8 +6,12 @@ const config = require('src/config/settings');
 const socketIo = require('socket.io');
 const uuid = require('uuid');
 
+const roomService = require('src/services/room.service');
+const authService = require('src/services/auth.service');
+
 let io;
 
+// Object where key is the room id and value is the viewer count
 var roomMembers = {};
 
 function listen(server)
@@ -26,20 +30,14 @@ function listen(server)
 
   io.on("connection", (socket) => {
 
-      console.log('socket-user:', socket.handshake.session.user);
-
       //If the socket belongs to a valid user session
       if(!!socket.handshake.session.user)
       {
-
-        console.log('User #' + socket.handshake.session.user.id + ' Connected: ' + socket.handshake.session.user);
 
         // Join the socket to the user's pesonal channel. This is used to receive private messages
         socket.join(socket.handshake.session.user.id);
 
       }
-
-      console.log('socket connected');
 
       // Upon receiving the JoinRoom socket event
       socket.on('join-room', (data) => {
@@ -52,8 +50,6 @@ function listen(server)
           socket.leave(socket.room);
 
         }
-
-        console.log('join-room', data);
 
         // Join the socket.io room to start subscribing to messages in that room
         socket.join('room-'+room);
@@ -72,18 +68,42 @@ function listen(server)
 
       });
 
+      socket.on('chat-message-sent', (data) => {
+
+        const { roomId, message } = data;
+
+        if(!!socket.handshake.session.user)
+        {
+
+          const currentUserId = socket.handshake.session.user.id;
+
+          if(!!message)
+          {
+
+            authService.getUserById(currentUserId).then(function(user) {
+  
+              io.to('room-'+roomId).emit('chat-message', {
+                message: message,
+                sender: {
+                  userId: currentUserId,
+                  ...user.toJson()
+                },
+                id: uuid.v4()
+              });
+    
+            });   
+
+          }         
+
+        }             
+
+      });
+
   });
 
-  setInterval(() => {
-
-    io.to('room-e09cbfa3-3907-4d89-bd6b-15bcb7348eff').emit('chat-message', {
-      message: 'hello world',
-      id: uuid.v4()
-    });
-
-  }, 10000);
-
   setInterval(() => { updateViewerCounts(io) }, 5000);
+
+  return io;
 
 }
 
@@ -104,73 +124,30 @@ function updateViewerCounts(io) {
 
         members[key] = value.size;
 
+        // For the open room, emit to the current viewers the updated viewer count
         io.to(key.toString()).emit('viewer-count', {
           viewerCount: value.size
         });
+
+        // Also get the room details and
+        roomService.getRoomDetails(key.toString().replace('room-', '')).then((room) => {
+
+          io.to(key.toString()).emit('room-data-update', {
+            room: room
+          });
+
+        }); 
 
       }      
 
     }
 
-    // rooms.forEach((value, key, map) => {
-
-    //   console.log(key);
-
-    //   // If room key includes room prefix
-    //   if(key.indexOf('room-') !== -1)
-    //   {
-
-    //     console.log(key, value);
-
-    //   }     
-
-    // });
-
   }
 
   roomMembers = members;
-
-  console.log(roomMembers);
-  
-  //console.log(rooms);
 
 }
 
 module.exports = {
   listen
 };
-
-
-// io.on("connection", (socket) => {
-
-//   // If the socket belongs to a valid user session
-//   // if(!!socket.handshake.session.user)
-//   // {
-
-//   //   console.log('User #' + socket.handshake.session.user.id + ' Connected: ' + socket.handshake.session.user.name);
-
-//   //   // Join the socket to the user's pesonal channel. This is used to receive private messages
-//   //   socket.join(socket.handshake.session.user.id);
-
-//   // }
-
-
-//     console.log('socket connected');
-// });
-
-// //io.use(sharedsession(session));
-
-
-
-// function setupSession(session)
-// {
-
-//   // Share session with io sockets
- 
-//   io.use(sharedsession(session));
-
-// }
-
-// module.exports = {
-//     setupSession
-// };

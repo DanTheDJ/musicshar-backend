@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { getUserProfileFromSession } = require('src/_helpers/current-user');
+const { getUserProfileFromSession, getCurrentUserIdFromReq } = require('src/_helpers/current-user');
 
 const authSchemas = require('src/schemas/auth.schemas');
 const authService = require('src/services/auth.service');
@@ -32,8 +32,6 @@ function login(req, res, next) {
 
   const session = req.session;
 
-  console.log(loginData);
-
   authService.authenticateCredentials(loginData).then(function(user) {
 
     // Sucessfully logged in, send 204 to indicate success.
@@ -41,8 +39,6 @@ function login(req, res, next) {
     session.user = {
       id: user.id
     };
-
-    console.log(session);
 
     res.sendStatus(204);
 
@@ -75,8 +71,6 @@ function getCurrentUserProfile(req, res, next) {
 
   getUserProfileFromSession(req).then(function(profile) {
 
-    console.log('me', req.session);
-
     if(!!profile)
     {
 
@@ -94,11 +88,32 @@ function getCurrentUserProfile(req, res, next) {
   
 }
 
+function updateCurrentUserProfile(req, res, next) {
+
+  const currentUserId = getCurrentUserIdFromReq(req);
+  const newProfileData = req.body;
+
+  authService.updateUserProfile(currentUserId, newProfileData).then(() => {
+
+    res.sendStatus(204);
+
+  })
+  .catch((err) => {
+
+    console.error(err);
+
+    res.sendStatus(500);
+
+  });
+
+}
+
 // Routes registration
 router.post('/register', authSchemas.registerAccountSchema, registerAccount);
 router.post('/authenticate', authSchemas.authenticateSchema, login);
 router.post('/logout', logout);
 
 router.get('/me', getCurrentUserProfile);
+router.put('/me', updateCurrentUserProfile);
 
 module.exports = router;

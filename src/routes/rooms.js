@@ -90,9 +90,63 @@ function getRooms(req, res, next) {
 
 }
 
+function closeRoom(req, res, next)
+{
+
+  const currentUserId = getCurrentUserIdFromReq(req);
+  const roomId = req.params.id;
+
+  roomService.closeRoom(currentUserId, roomId).then(function(data) {
+
+    // Emit room closed to connected sockets
+    req.app.io.to('room-'+roomId).emit('room-closed');
+
+    res.sendStatus(204);
+
+  })
+  .catch(function(err) {
+
+    console.error(err);
+
+    res.status(400).json({
+      message: err
+    });
+
+  });
+
+}
+
+function updateRoomSource(req, res, next)
+{
+
+  const currentUserId = getCurrentUserIdFromReq(req);
+  const roomId = req.params.id;
+  const sourceData = req.body;
+
+  roomService.updateRoomSource(currentUserId, roomId, sourceData).then(function(data) {
+
+    res.sendStatus(204);
+
+  })
+  .catch(function(err) {
+
+    console.error(err);
+
+    res.status(400).json({
+      message: err
+    });
+
+  });
+
+}
+
 // Routes registration
 router.post('/', roomSchemas.createRoomSchema, createRoom);
 router.get('/', getRooms);
 router.get('/:id', getRoomDetails);
+
+router.put('/:id/source', updateRoomSource);
+
+router.delete('/:id', closeRoom);
 
 module.exports = router;

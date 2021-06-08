@@ -91,8 +91,6 @@ async function authenticateCredentials(loginData)
                 if(!!user && bcrypt.compareSync(loginData.password, user.password))
                 {
 
-                    console.log(user);
-
                     resolve(user);
 
                 }
@@ -119,7 +117,58 @@ async function authenticateCredentials(loginData)
 
 }
 
+async function getUserById(userId)
+{
+
+    return new Promise(function(resolve, reject) {
+
+        User.findByPk(userId).then(function(user) {
+    
+            resolve(user);
+    
+        })
+        .catch(function(err) {
+    
+            console.error(err);
+            
+            reject(err);
+    
+        });
+
+    });   
+
+}
+
+async function updateUserProfile(userId, newProfileData)
+{
+
+    return new Promise(function(resolve, reject) {
+
+        User.findByPk(userId).then(function(user) {
+
+            user.name = newProfileData.name;
+            user.email = newProfileData.email;
+
+            user.save().then(() => {
+                resolve();
+            });
+    
+        })
+        .catch(function(err) {
+    
+            console.error(err);
+            
+            reject(err);
+    
+        });
+
+    });   
+
+}
+
 module.exports = {
     registerAccount,
-    authenticateCredentials
+    authenticateCredentials,
+    getUserById,
+    updateUserProfile
 };
