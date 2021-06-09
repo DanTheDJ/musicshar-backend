@@ -129,8 +129,11 @@ function updateViewerCounts(io) {
           viewerCount: value.size
         });
 
+        // Remove the room- prefix from the channel name, to get the room uuid
+        const roomId = key.toString().replace('room-', '');
+
         // Also get the room details and
-        roomService.getRoomDetails(key.toString().replace('room-', '')).then((room) => {
+        roomService.getRoomDetails(roomId).then((room) => {
 
           io.to(key.toString()).emit('room-data-update', {
             room: room

@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+const authorize = require('src/_middleware/authorize');
+
 const { getUserProfileFromSession, getCurrentUserIdFromReq } = require('src/_helpers/current-user');
 
 const authSchemas = require('src/schemas/auth.schemas');
@@ -113,7 +115,7 @@ router.post('/register', authSchemas.registerAccountSchema, registerAccount);
 router.post('/authenticate', authSchemas.authenticateSchema, login);
 router.post('/logout', logout);
 
-router.get('/me', getCurrentUserProfile);
-router.put('/me', updateCurrentUserProfile);
+router.get('/me', authorize(), getCurrentUserProfile);
+router.put('/me', authorize(), updateCurrentUserProfile);
 
 module.exports = router;

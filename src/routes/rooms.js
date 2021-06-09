@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+const authorize = require('src/_middleware/authorize');
+
 const { getCurrentUserIdFromReq } = require('src/_helpers/current-user');
 
 const roomSchemas = require('src/schemas/room.schemas');
@@ -141,12 +143,12 @@ function updateRoomSource(req, res, next)
 }
 
 // Routes registration
-router.post('/', roomSchemas.createRoomSchema, createRoom);
-router.get('/', getRooms);
-router.get('/:id', getRoomDetails);
+router.post('/', [authorize(), roomSchemas.createRoomSchema], createRoom);
+router.get('/', authorize(), getRooms);
+router.get('/:id', authorize(), getRoomDetails);
 
-router.put('/:id/source', updateRoomSource);
+router.put('/:id/source', authorize(), updateRoomSource);
 
-router.delete('/:id', closeRoom);
+router.delete('/:id', authorize(), closeRoom);
 
 module.exports = router;
